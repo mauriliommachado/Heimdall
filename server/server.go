@@ -10,6 +10,7 @@ import (
 	"../db"
 	"gopkg.in/mgo.v2/bson"
 	"encoding/base64"
+	"github.com/rs/cors"
 )
 
 type ServerProperties struct {
@@ -167,8 +168,9 @@ func badRequest(w http.ResponseWriter, err error) {
 func Start(properties ServerProperties) {
 	startDb()
 	m := pat.New()
+	handler := cors.AllowAll().Handler(m)
 	mapEndpoints(*m, properties)
-	http.Handle("/", m)
+	http.Handle("/", handler)
 	fmt.Println("servidor iniciado no endereço localhost:" + properties.Port + properties.Address)
 	err := http.ListenAndServe(":"+properties.Port, nil)
 
